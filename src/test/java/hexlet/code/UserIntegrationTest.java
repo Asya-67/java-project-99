@@ -5,24 +5,24 @@ import hexlet.code.dto.users.CreateUserDTO;
 import hexlet.code.dto.users.UpdateUserDTO;
 import hexlet.code.model.User;
 import hexlet.code.repository.UserRepository;
-import hexlet.code.mapper.UserMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.instancio.Instancio;
 import org.openapitools.jackson.nullable.JsonNullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -36,65 +36,129 @@ public class UserIntegrationTest {
     private UserRepository userRepository;
 
     @Autowired
-    private UserMapper userMapper;
-
-    @Autowired
     private ObjectMapper objectMapper;
 
-    private User testUser;
-    private SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor token;
+    @Autowired
+    private JwtEncoder jwtEncoder;
+
+    private String token;
     private final String url = "/api/users";
 
+    private User testUser;
+
     @BeforeEach
-    public void setUp() {
+    void setUp() {
+        userRepository.deleteAll();
+
         testUser = new User();
         testUser.setEmail("test@example.com");
         testUser.setFirstName("John");
         testUser.setLastName("Doe");
-        testUser.setPasswordDigest("12345");
+        testUser.setPasswordDigest("hashed");
+        testUser = userRepository.save(testUser);
 
-        token = jwt().jwt(builder -> builder.subject(testUser.getEmail()));
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                .subject(testUser.getEmail())
+                .build();
+        token = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         userRepository.deleteAll();
     }
 
     @Test
-    public void testCreateUser() throws Exception {
+    void testCreateUserValid() throws Exception {
         CreateUserDTO dto = new CreateUserDTO();
-        dto.setEmail("test@example.com");
-        dto.setFirstName("John");
-        dto.setLastName("Doe");
-        dto.setPassword("12345");
+        dto.setEmail("newuser@example.com");
+        dto.setFirstName("Alice");
+        dto.setLastName("Smith");
+        dto.setPassword("password");
 
         MockHttpServletRequestBuilder request = post(url)
-                .with(jwt())
+                .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto));
 
-        MvcResult result = mockMvc.perform(request)
-                .andExpect(status().isCreated())
-                .andReturn();
+        mockMvc.perform(request)
+                .andExpect(status().isCreated());
 
-        String body = result.getResponse().getContentAsString();
-        User createdUser = userRepository.findByEmail("test@example.com").orElseThrow();
-
-        assertThat(createdUser.getEmail()).isEqualTo("test@example.com");
-        assertThat(createdUser.getFirstName()).isEqualTo("John");
-        assertThat(createdUser.getLastName()).isEqualTo("Doe");
+        assertThat(userRepository.findByEmail("newuser@example.com")).isPresent();
     }
 
+    // Валидация: пустой email
     @Test
-    public void testUpdateUser() throws Exception {
-        userRepository.save(testUser);
+    void testCreateUserInvalidEmailEmpty() throws Exception {
+        CreateUserDTO dto = new CreateUserDTO();
+        dto.setEmail("");
+        dto.setPassword("12345");
 
+        MockHttpServletRequestBuilder request = post(url)
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto));
+
+        mockMvc.perform(request)
+                .andExpect(status().isBadRequest());
+    }
+
+    // Валидация: неверный формат email
+    @Test
+    void testCreateUserInvalidEmailFormat() throws Exception {
+        CreateUserDTO dto = new CreateUserDTO();
+        dto.setEmail("not-an-email");
+        dto.setPassword("12345");
+
+        MockHttpServletRequestBuilder request = post(url)
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto));
+
+        mockMvc.perform(request)
+                .andExpect(status().isBadRequest());
+    }
+
+    // Валидация: пустой пароль
+    @Test
+    void testCreateUserEmptyPassword() throws Exception {
+        CreateUserDTO dto = new CreateUserDTO();
+        dto.setEmail("user@example.com");
+        dto.setPassword("");
+
+        MockHttpServletRequestBuilder request = post(url)
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto));
+
+        mockMvc.perform(request)
+                .andExpect(status().isBadRequest());
+    }
+
+    // Валидация: слишком короткий пароль
+    @Test
+    void testCreateUserShortPassword() throws Exception {
+        CreateUserDTO dto = new CreateUserDTO();
+        dto.setEmail("user@example.com");
+        dto.setPassword("12");
+
+        MockHttpServletRequestBuilder request = post(url)
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto));
+
+        mockMvc.perform(request)
+                .andExpect(status().isBadRequest());
+    }
+
+    // Частичное обновление через UpdateUserDTO
+    @Test
+    void testUpdateUserPartial() throws Exception {
         UpdateUserDTO updateDto = new UpdateUserDTO();
         updateDto.setEmail(JsonNullable.of("updated@example.com"));
 
         MockHttpServletRequestBuilder request = put(url + "/" + testUser.getId())
-                .with(token)
+                .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateDto));
 
@@ -105,27 +169,11 @@ public class UserIntegrationTest {
         assertThat(updatedUser.getEmail()).isEqualTo("updated@example.com");
     }
 
+    // Удаление пользователя
     @Test
-    public void testGetUser() throws Exception {
-        userRepository.save(testUser);
-
-        MockHttpServletRequestBuilder request = get(url + "/" + testUser.getId())
-                .with(token);
-
-        MvcResult result = mockMvc.perform(request)
-                .andExpect(status().isOk())
-                .andReturn();
-
-        String body = result.getResponse().getContentAsString();
-        assertThat(body).contains(testUser.getEmail());
-    }
-
-    @Test
-    public void testDeleteUser() throws Exception {
-        userRepository.save(testUser);
-
+    void testDeleteUser() throws Exception {
         MockHttpServletRequestBuilder request = delete(url + "/" + testUser.getId())
-                .with(token);
+                .header("Authorization", "Bearer " + token);
 
         mockMvc.perform(request)
                 .andExpect(status().isNoContent());

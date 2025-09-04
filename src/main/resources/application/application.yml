@@ -5,3 +5,7 @@ spring:
       ddl-auto: update
   profiles:
     active: dev
+  rsa:
+    privateKeyPath: src/main/resources/keys/private.pem
+    publicKeyPath: src/main/resources/keys/public.pem
+

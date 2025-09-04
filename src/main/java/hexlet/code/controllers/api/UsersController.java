@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,18 +55,27 @@ public class UsersController {
 
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO> updateUser(@PathVariable Long id,
-                                              @RequestBody UpdateUserDTO dto) {
+                                              @RequestBody UpdateUserDTO dto,
+                                              Principal principal) {
         try {
-            User updated = userService.updateUser(id, dto);
+            User updated = userService.updateUser(id, dto, principal.getName());
             return ResponseEntity.ok(UserMapper.toDTO(updated));
-        } catch (RuntimeException e) {
+        } catch (UserService.UserNotFoundException e) {
             return ResponseEntity.notFound().build();
+        } catch (UserService.UserForbiddenException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id, Principal principal) {
+        try {
+            userService.deleteUser(id, principal.getName());
+            return ResponseEntity.noContent().build();
+        } catch (UserService.UserNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (UserService.UserForbiddenException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
 }
