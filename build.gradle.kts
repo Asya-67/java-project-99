@@ -61,6 +61,9 @@ dependencies {
 	testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
 	implementation("org.openapitools:jackson-databind-nullable:0.2.7")
 	implementation("jakarta.annotation:jakarta.annotation-api:2.1.1")
+	implementation("org.openapitools:jackson-datatype-nullable:0.2.3")
+	implementation("org.openapitools:jackson-datatype-json-org:1.5.1")
+
 	// Tests
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
