@@ -49,9 +49,10 @@ jobs:
       - name: SonarCloud Scan
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew sonarqube \
-          -Dsonar.login=$SONAR_TOKEN \
-          -Dsonar.projectKey=Asya-67_java-project-99 \
-          -Dsonar.organization=asya-67-71 \
-          -Dsonar.host.url=https://sonarcloud.io \
-          --info
+        run: |
+          ./gradlew sonarqube \
+            -Dsonar.login=$SONAR_TOKEN \
+            -Dsonar.projectKey=Asya-67_java-project-99 \
+            -Dsonar.organization=asya-67-71 \
+            -Dsonar.host.url=https://sonarcloud.io \
+            --info
