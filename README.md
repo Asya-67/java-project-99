@@ -5,4 +5,4 @@
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=Asya-67_java-project-99&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=Asya-67_java-project-99)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Asya-67_java-project-99&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Asya-67_java-project-99)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=Asya-67_java-project-99&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=Asya-67_java-project-99)
-[Перейти к деплою приложения](https://java-project-99-3odi.onrender.com)
+[Перейти к деплою приложения](https://java-project-99-1-92dp.onrender.com)

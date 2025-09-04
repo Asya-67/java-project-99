@@ -1,11 +1,26 @@
-# Используем JDK 21
+# 1. Базовый образ
 FROM eclipse-temurin:21-jdk-alpine
 
-# Копируем jar после сборки Gradle
-COPY build/libs/app-0.0.1-SNAPSHOT.jar app.jar
+# 2. Рабочая директория
+WORKDIR /app
 
-# Устанавливаем рабочую директорию
-WORKDIR /
+# 3. Копируем Gradle и исходники
+COPY gradlew .
+COPY gradle gradle
+COPY build.gradle settings.gradle ./
+COPY src src
 
-# Запуск приложения
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# 4. Делаем gradlew исполняемым
+RUN chmod +x gradlew
+
+# 5. Сборка проекта и создание JAR
+RUN ./gradlew build --no-daemon
+
+# 6. Копируем собранный JAR в корень контейнера
+RUN cp build/libs/*.jar app.jar
+
+# 7. Порт приложения
+EXPOSE 8080
+
+# 8. Запуск через java -jar
+CMD ["java", "-jar", "app.jar"]
