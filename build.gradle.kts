@@ -7,6 +7,7 @@ plugins {
 	// Spring Boot
 	id("org.springframework.boot") version "3.5.5"
 	id("io.spring.dependency-management") version "1.1.7"
+	id("io.sentry.jvm.gradle") version "5.9.0"
 
 	// Дополнительные плагины
 	checkstyle
@@ -33,41 +34,48 @@ repositories {
 }
 
 dependencies {
-	// Kotlin
-	implementation("org.jetbrains.kotlin:kotlin-stdlib")
-	implementation("org.jetbrains.kotlin:kotlin-reflect")
-
 	// Spring Boot
-	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	implementation("org.springframework.boot:spring-boot-starter-security")
-	implementation("org.springframework.boot:spring-boot-starter-validation")
-	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+	implementation("org.springframework.boot:spring-boot-starter-web:3.5.0")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa:3.5.0")
+	implementation("org.springframework.boot:spring-boot-starter-validation:3.5.0")
+	implementation("org.springframework.boot:spring-boot-starter-actuator:3.5.0")
+	implementation("org.springframework.boot:spring-boot-starter-security:3.5.0")
+	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server:3.5.0")
+	implementation("org.springframework.boot:spring-boot-devtools:3.5.0")
+	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:3.5.0")
 
-	// JWT
-	implementation("org.springframework.security:spring-security-oauth2-jose")
-	implementation("org.springframework.security:spring-security-crypto")
+	// OpenAPI
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8")
 
-	// Databases
-	runtimeOnly("com.h2database:h2")
-	runtimeOnly("org.postgresql:postgresql")
+	// Utilities
+	implementation("org.openapitools:jackson-databind-nullable:0.2.6")
+	implementation("org.apache.commons:commons-lang3:3.17.0")
+	implementation("net.datafaker:datafaker:2.4.3")
+	implementation("org.instancio:instancio-junit:5.4.1")
+	testImplementation("net.javacrumbs.json-unit:json-unit-assertj:4.1.1")
 
-	// Jakarta Servlet API
-	compileOnly("jakarta.servlet:jakarta.servlet-api:6.0.0")
+	// MapStruct
+	implementation("org.mapstruct:mapstruct:1.6.3")
+	annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
+
+	// DB
+	runtimeOnly("com.h2database:h2:2.3.232")
 
 	// Lombok
 	compileOnly("org.projectlombok:lombok:1.18.30")
 	annotationProcessor("org.projectlombok:lombok:1.18.30")
 	testCompileOnly("org.projectlombok:lombok:1.18.30")
 	testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
-	implementation("org.openapitools:jackson-databind-nullable:0.2.7")
-	implementation("jakarta.annotation:jakarta.annotation-api:2.1.1")
-	implementation("org.openapitools:jackson-datatype-nullable:0.2.3")
-	implementation("org.openapitools:jackson-datatype-json-org:1.5.1")
+	implementation("org.mapstruct:mapstruct:1.6.15.Final")
+	implementation("org.mapstruct:mapstruct:1.5.5.Final")
+	annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
 
 	// Tests
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	testImplementation("org.springframework.security:spring-security-test")
+	testImplementation("org.springframework.boot:spring-boot-starter-test:3.5.0")
+	testImplementation("org.springframework.security:spring-security-test:6.5.0")
+	testImplementation(platform("org.junit:junit-bom:5.12.2"))
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
@@ -90,4 +98,12 @@ checkstyle {
 // Настройки Jacoco
 jacoco {
 	toolVersion = "0.8.12"
+}
+
+// Sentry
+sentry {
+	includeSourceContext = true
+	org = "ba152fd5144f"
+	projectName = "java-spring-boot-project-5"
+	authToken = System.getenv("SENTRY_AUTH_TOKEN")
 }

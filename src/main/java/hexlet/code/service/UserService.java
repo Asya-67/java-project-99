@@ -1,19 +1,21 @@
 package hexlet.code.service;
 
-import hexlet.code.dto.users.CreateUserDTO;
+import hexlet.code.dto.users.UserCreateDTO;
 import hexlet.code.dto.users.UpdateUserDTO;
 import hexlet.code.model.User;
 import hexlet.code.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -33,7 +35,7 @@ public class UserService {
         return userRepository.findById(id);
     }
 
-    public User createUser(CreateUserDTO dto) {
+    public User createUser(UserCreateDTO dto) {
         User user = new User();
         user.setEmail(dto.getEmail());
         user.setFirstName(dto.getFirstName());
@@ -73,5 +75,10 @@ public class UserService {
         }
 
         userRepository.delete(user);
+    }
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
     }
 }

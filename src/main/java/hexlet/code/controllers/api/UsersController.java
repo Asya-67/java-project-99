@@ -1,6 +1,6 @@
 package hexlet.code.controllers.api;
 
-import hexlet.code.dto.users.CreateUserDTO;
+import hexlet.code.dto.users.UserCreateDTO;
 import hexlet.code.dto.users.UpdateUserDTO;
 import hexlet.code.dto.users.UserDTO;
 import hexlet.code.mapper.UserMapper;
@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import io.sentry.Sentry;
 
 @RestController
 @RequestMapping("/api/users")
@@ -48,7 +50,7 @@ public class UsersController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDTO> createUser(@Valid @RequestBody CreateUserDTO dto) {
+    public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserCreateDTO dto) {
         User user = userService.createUser(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(UserMapper.toDTO(user));
     }
@@ -77,5 +79,14 @@ public class UsersController {
         } catch (UserService.UserForbiddenException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
+    }
+    @GetMapping("/sentry-test")
+    public ResponseEntity<String> testSentry() {
+        try {
+            throw new Exception("This is a Sentry test error!");
+        } catch (Exception e) {
+            Sentry.captureException(e); // отправка ошибки в Sentry
+        }
+        return ResponseEntity.ok("Sentry test error sent!");
     }
 }

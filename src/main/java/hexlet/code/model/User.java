@@ -1,11 +1,6 @@
 package hexlet.code.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Column;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 
 import lombok.Getter;
@@ -21,6 +16,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
@@ -57,38 +54,27 @@ public class User implements BaseEntity, UserDetails {
     @LastModifiedDate
     private LocalDate updatedAt;
 
-    @Override
-    public String getPassword() {
-        return passwordDigest;
-    }
+    @OneToMany(mappedBy = "assignee")
+    private Set<Task> tasks = new HashSet<>();
 
     @Override
-    public String getUsername() {
-        return email;
-    }
+    public String getPassword() { return passwordDigest; }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return new ArrayList<>();
-    }
+    public String getUsername() { return email; }
 
     @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
+    public Collection<? extends GrantedAuthority> getAuthorities() { return new ArrayList<>(); }
 
     @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
+    public boolean isAccountNonExpired() { return true; }
 
     @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
+    public boolean isAccountNonLocked() { return true; }
 
     @Override
-    public boolean isEnabled() {
-        return true;
-    }
+    public boolean isCredentialsNonExpired() { return true; }
+
+    @Override
+    public boolean isEnabled() { return true; }
 }

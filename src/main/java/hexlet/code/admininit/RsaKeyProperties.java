@@ -21,7 +21,7 @@ public class RsaKeyProperties {
     @PostConstruct
     public void initKeys() throws Exception {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-        keyPairGenerator.initialize(2048); // размер ключа
+        keyPairGenerator.initialize(2048);
         KeyPair keyPair = keyPairGenerator.generateKeyPair();
 
         this.privateKey = (RSAPrivateKey) keyPair.getPrivate();

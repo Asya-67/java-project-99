@@ -1,11 +1,11 @@
-package hexlet.code.dto.users;
+package hexlet.code.dto;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Setter
 @Getter
-public class LoginRequest {
+public class AuthRequest {
     private String username;
     private String password;
 }

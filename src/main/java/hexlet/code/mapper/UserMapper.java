@@ -1,5 +1,6 @@
 package hexlet.code.mapper;
 
+import hexlet.code.dto.users.UserCreateDTO;
 import hexlet.code.dto.users.UserDTO;
 import hexlet.code.model.User;
 import org.openapitools.jackson.nullable.JsonNullable;
@@ -26,5 +27,13 @@ public class UserMapper {
         if (dto.getLastName() != null && dto.getLastName().isPresent()) {
             user.setLastName(dto.getLastName().get());
         }
+    }
+
+    public static UserCreateDTO mapToCreateDTO(User user) {
+        UserCreateDTO dto = new UserCreateDTO();
+        dto.setEmail(user.getEmail());
+        dto.setFirstName(user.getFirstName());
+        dto.setLastName(user.getLastName());
+        return dto;
     }
 }
