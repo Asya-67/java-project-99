@@ -1,22 +1,19 @@
 package hexlet.code;
 
-import hexlet.code.dto.AuthRequest;
+import hexlet.code.model.User;
+import hexlet.code.repository.UserRepository;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -26,22 +23,29 @@ public class AuthControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private ObjectMapper om;
+    private UserRepository userRepository;
 
-    @Value("/api/login")
-    private String url;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @BeforeEach
+    public void setUp() {
+        User user = new User();
+        user.setEmail("hexlet@example.com");
+        user.setPassword(passwordEncoder.encode("qwerty"));
+        userRepository.save(user);
+    }
+
+    @AfterEach
+    public void clear() {
+        userRepository.deleteAll();
+    }
 
     @Test
-    public void testIndex() throws Exception {
-        AuthRequest authRequest = new AuthRequest();
-        authRequest.setUsername("hexlet@example.com");
-        authRequest.setPassword("qwerty");
-
-        MockHttpServletRequestBuilder request = post(url).with(jwt())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(om.writeValueAsString(authRequest));
-
-        mockMvc.perform(request)
+    public void testLogin() throws Exception {
+        mockMvc.perform(post("/api/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"username\": \"hexlet@example.com\", \"password\": \"qwerty\"}"))
                 .andExpect(status().isOk());
     }
 }

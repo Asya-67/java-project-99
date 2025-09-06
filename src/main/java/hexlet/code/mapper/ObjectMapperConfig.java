@@ -9,8 +9,9 @@ import org.springframework.context.annotation.Configuration;
 public class ObjectMapperConfig {
 
     @Bean
-    public ObjectMapper objectMapper(ObjectMapper defaultMapper) {
-        defaultMapper.registerModule(new JsonNullableModule());
-        return defaultMapper;
+    public ObjectMapper objectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JsonNullableModule());
+        return mapper;
     }
 }

@@ -35,7 +35,8 @@ public class SecurityConfig {
                                 "/api/login",
                                 "/",
                                 "/index.html",
-                                "/assets/**"
+                                "/assets/**",
+                                "/test-sentry"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

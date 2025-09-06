@@ -1,3 +1,7 @@
+server:
+  address: 0.0.0.0
+  port: 8080
+
 spring:
   jpa:
     show-sql: true
@@ -8,6 +12,8 @@ spring:
   rsa:
     privateKeyPath: src/main/resources/keys/private.pem
     publicKeyPath: src/main/resources/keys/public.pem
-  sentry:
-    dsn: https://5f5ad319e5ff39c41aca438c47c9a089@o4509968755916800.ingest.de.sentry.io/4509968768958544
-    send-default-pii: true
+
+sentry:
+  dsn: "https://5f5ad319e5ff39c41aca438c47c9a089@o4509968755916800.ingest.de.sentry.io/4509968768958544"
+  send-default-pii: true
+  traces-sample-rate: 1.0

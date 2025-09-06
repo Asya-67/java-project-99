@@ -8,6 +8,7 @@ plugins {
 	id("org.springframework.boot") version "3.5.5"
 	id("io.spring.dependency-management") version "1.1.7"
 	id("io.sentry.jvm.gradle") version "5.9.0"
+	id("org.sonarqube") version "6.2.0.5505"
 
 	// Дополнительные плагины
 	checkstyle
@@ -66,6 +67,8 @@ dependencies {
 	implementation("org.mapstruct:mapstruct:1.5.5.Final")
 	annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
 	annotationProcessor("org.projectlombok:lombok-mapstruct-binding:0.2.0")
+	implementation("io.sentry:sentry-spring-boot-starter:8.20.0")
+	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 
 	// Tests
 	testImplementation("org.springframework.boot:spring-boot-starter-test:3.5.0")
@@ -103,4 +106,16 @@ sentry {
 	org = "ba152fd5144f"
 	projectName = "java-spring-boot-project-5"
 	authToken = System.getenv("SENTRY_AUTH_TOKEN")
+	includeSourceContext = false
+}
+
+sonarqube {
+	properties {
+		property("sonar.projectKey", "Asya-67_java-project-99")
+		property("sonar.organization", "asya-67-71")
+		property("sonar.host.url", "https://sonarcloud.io")
+		property("sonar.login", System.getenv("SONAR_TOKEN"))
+		property("sonar.java.coveragePlugin", "jacoco")
+		property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml")
+	}
 }
