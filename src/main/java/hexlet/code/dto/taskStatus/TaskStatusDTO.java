@@ -10,10 +10,10 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class TaskStatusDTO {
-	private Long id;
-	private JsonNullable<String> name;
-	private JsonNullable<String> slug;
+    private Long id;
+    private JsonNullable<String> name;
+    private JsonNullable<String> slug;
 
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-	private LocalDate createdAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate createdAt;
 }

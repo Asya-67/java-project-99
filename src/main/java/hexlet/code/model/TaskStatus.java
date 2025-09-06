@@ -1,8 +1,6 @@
 package hexlet.code.model;
 
 import jakarta.persistence.*;
-
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
@@ -21,21 +19,16 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @EntityListeners(AuditingEntityListener.class)
 public class TaskStatus implements BaseEntity {
 
-	@Id
-	@GeneratedValue(strategy = IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
+    private Long id;
 
-	@NotBlank
-	@Column(unique = true)
-	private String name;
+    private String name;
+    private String slug;
 
-	@NotBlank
-	@Column(unique = true)
-	private String slug;
+    @CreatedDate
+    private LocalDate createdAt;
 
-	@CreatedDate
-	private LocalDate createdAt;
-
-	@OneToMany(mappedBy = "taskStatus")
-	private Set<Task> tasks = new HashSet<>();
+    @OneToMany(mappedBy = "taskStatus")
+    private Set<Task> tasks = new HashSet<>();
 }

@@ -9,9 +9,9 @@ import java.util.Set;
 @Getter
 @Setter
 public class TaskUpdateDTO {
-	private JsonNullable<Long> assigneeId;
-	private JsonNullable<String> name;
-	private JsonNullable<String> description;
-	private JsonNullable<String> status;
-	private JsonNullable<Set<Long>> taskLabelIds;
+    private JsonNullable<Long> assigneeId = JsonNullable.undefined();
+    private JsonNullable<String> name = JsonNullable.undefined();
+    private JsonNullable<String> description = JsonNullable.undefined();
+    private JsonNullable<String> status = JsonNullable.undefined();
+    private JsonNullable<Set<Long>> taskLabelIds = JsonNullable.undefined();
 }

@@ -6,8 +6,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class TaskRouteDTO {
-	private String titleCont;
-	private Long assigneeId;
-	private String status;
-	private Long labelId;
+    private String titleCont;
+    private Long assigneeId;
+    private String status;
+    private Long labelId;
 }

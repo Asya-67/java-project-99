@@ -54,10 +54,6 @@ dependencies {
 	implementation("org.instancio:instancio-junit:5.4.1")
 	testImplementation("net.javacrumbs.json-unit:json-unit-assertj:4.1.1")
 
-	// MapStruct
-	implementation("org.mapstruct:mapstruct:1.6.3")
-	annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
-
 	// DB
 	runtimeOnly("com.h2database:h2:2.3.232")
 
@@ -66,9 +62,10 @@ dependencies {
 	annotationProcessor("org.projectlombok:lombok:1.18.30")
 	testCompileOnly("org.projectlombok:lombok:1.18.30")
 	testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
-	implementation("org.mapstruct:mapstruct:1.6.15.Final")
+	// MapStruct
 	implementation("org.mapstruct:mapstruct:1.5.5.Final")
 	annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
+	annotationProcessor("org.projectlombok:lombok-mapstruct-binding:0.2.0")
 
 	// Tests
 	testImplementation("org.springframework.boot:spring-boot-starter-test:3.5.0")

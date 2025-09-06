@@ -26,43 +26,43 @@ import java.util.List;
 @RequestMapping(path = "/api/labels")
 @AllArgsConstructor
 public class LabelsController {
-	private final LabelService labelService;
+    private final LabelService labelService;
 
-	@GetMapping(path = "")
-	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<List<LabelDTO>> index() {
-		List<LabelDTO> labels = labelService.getAll();
-		return ResponseEntity.ok()
-				.header("X-Total-Count", String.valueOf(labels.size()))
-				.body(labels);
-	}
+    @GetMapping(path = "")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<List<LabelDTO>> index() {
+        List<LabelDTO> labels = labelService.getAll();
+        return ResponseEntity.ok()
+                .header("X-Total-Count", String.valueOf(labels.size()))
+                .body(labels);
+    }
 
-	@PostMapping(path = "")
-	@ResponseStatus(HttpStatus.CREATED)
-	public ResponseEntity<LabelDTO> create(@Valid @RequestBody LabelCreateDTO labelData)
-			throws NoSuchAlgorithmException, InvalidKeySpecException {
-		LabelDTO labels =  labelService.create(labelData);
-		return ResponseEntity.status(HttpStatus.CREATED).body(labels);
-	}
+    @PostMapping(path = "")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<LabelDTO> create(@Valid @RequestBody LabelCreateDTO labelData)
+            throws NoSuchAlgorithmException, InvalidKeySpecException {
+        LabelDTO labels = labelService.create(labelData);
+        return ResponseEntity.status(HttpStatus.CREATED).body(labels);
+    }
 
-	@GetMapping(path = "/{id}")
-	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<LabelDTO> show(@PathVariable Long id) {
-		LabelDTO label = labelService.findById(id);
-		return ResponseEntity.status(HttpStatus.OK).body(label);
-	}
+    @GetMapping(path = "/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<LabelDTO> show(@PathVariable Long id) {
+        LabelDTO label = labelService.findById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(label);
+    }
 
-	@PutMapping(path = "/{id}")
-	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<LabelDTO> update(@RequestBody @Valid LabelUpdateDTO labelData, @PathVariable Long id) {
-		LabelDTO label = labelService.update(labelData, id);
-		return ResponseEntity.status(HttpStatus.OK).body(label);
-	}
+    @PutMapping(path = "/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<LabelDTO> update(@RequestBody @Valid LabelUpdateDTO labelData, @PathVariable Long id) {
+        LabelDTO label = labelService.update(labelData, id);
+        return ResponseEntity.status(HttpStatus.OK).body(label);
+    }
 
-	@DeleteMapping(path = "/{id}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		labelService.delete(id);
-		return ResponseEntity.noContent().build();
-	}
+    @DeleteMapping(path = "/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        labelService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 }

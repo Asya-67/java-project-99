@@ -26,44 +26,44 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/tasks")
 @AllArgsConstructor
-public class TasksController {
-	private final TaskService tasksService;
+class TasksController {
+    private final TaskService tasksService;
 
-	@GetMapping(path = "")
-	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<List<TaskDTO>> index(TaskRouteDTO params) {
-		List<TaskDTO> tasks = tasksService.getAll(params);
-		return ResponseEntity.ok()
-				.header("X-Total-Count", String.valueOf(tasks.size()))
-				.body(tasks);
-	}
+    @GetMapping(path = "")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<List<TaskDTO>> index(TaskRouteDTO routes) {
+        List<TaskDTO> tasks = tasksService.getAll(routes);
+        return ResponseEntity.ok()
+                .header("X-Total-Count", String.valueOf(tasks.size()))
+                .body(tasks);
+    }
 
-	@PostMapping(path = "")
-	@ResponseStatus(HttpStatus.CREATED)
-	public ResponseEntity<TaskDTO> create(@Valid @RequestBody TaskCreateDTO taskData)
-			throws NoSuchAlgorithmException, InvalidKeySpecException {
-		TaskDTO tasks =  tasksService.create(taskData);
-		return ResponseEntity.status(HttpStatus.CREATED).body(tasks);
-	}
+    @PostMapping(path = "")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<TaskDTO> create(@Valid @RequestBody TaskCreateDTO taskData)
+            throws NoSuchAlgorithmException, InvalidKeySpecException {
+        TaskDTO tasks = tasksService.create(taskData);
+        return ResponseEntity.status(HttpStatus.CREATED).body(tasks);
+    }
 
-	@GetMapping(path = "/{id}")
-	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<TaskDTO> show(@PathVariable Long id) {
-		TaskDTO task = tasksService.findById(id);
-		return ResponseEntity.status(HttpStatus.OK).body(task);
-	}
+    @GetMapping(path = "/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<TaskDTO> show(@PathVariable Long id) {
+        TaskDTO task = tasksService.findById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(task);
+    }
 
-	@PutMapping(path = "/{id}")
-	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<TaskDTO> update(@RequestBody @Valid TaskUpdateDTO taskData, @PathVariable Long id) {
-		TaskDTO task = tasksService.update(taskData, id);
-		return ResponseEntity.status(HttpStatus.OK).body(task);
-	}
+    @PutMapping(path = "/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<TaskDTO> update(@RequestBody @Valid TaskUpdateDTO taskData, @PathVariable Long id) {
+        TaskDTO task = tasksService.update(taskData, id);
+        return ResponseEntity.status(HttpStatus.OK).body(task);
+    }
 
-	@DeleteMapping(path = "/{id}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		tasksService.delete(id);
-		return ResponseEntity.noContent().build();
-	}
+    @DeleteMapping(path = "/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        tasksService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 }

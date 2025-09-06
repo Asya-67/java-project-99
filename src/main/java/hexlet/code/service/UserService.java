@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +24,7 @@ public class UserService implements UserDetailsService {
     public static class UserNotFoundException extends RuntimeException {
 
     }
+
     public static class UserForbiddenException extends RuntimeException {
 
     }
@@ -76,6 +78,7 @@ public class UserService implements UserDetailsService {
 
         userRepository.delete(user);
     }
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email)

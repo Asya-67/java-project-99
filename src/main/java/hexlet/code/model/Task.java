@@ -23,34 +23,34 @@ import java.util.Set;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
-@Getter
-@Setter
 @Entity
+@Setter
+@Getter
 @Table(name = "tasks")
 @EntityListeners(AuditingEntityListener.class)
 public class Task implements BaseEntity {
 
-	@Id
-	@GeneratedValue(strategy = IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
+    private Long id;
 
-	private String name;
+    private String name;
 
-	private Integer index;
+    private Integer index;
 
-	@Column(columnDefinition = "TEXT")
-	private String description;
+    @Column(columnDefinition = "TEXT")
+    private String description;
 
-	@ManyToOne
-	private User assignee;
+    @ManyToOne
+    private User assignee;
 
-	@JoinColumn(nullable = false)
-	@ManyToOne
-	private TaskStatus taskStatus;
+    @JoinColumn(nullable = false)
+    @ManyToOne
+    private TaskStatus taskStatus;
 
-	@ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
-	private Set<Label> labels = new HashSet<>();
+    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    private Set<Label> labels = new HashSet<>();
 
-	@CreatedDate
-	private LocalDate createdAt;
+    @CreatedDate
+    private LocalDate createdAt;
 }

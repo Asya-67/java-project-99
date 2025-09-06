@@ -9,7 +9,7 @@ import org.openapitools.jackson.nullable.JsonNullable;
 @Getter
 @Setter
 public class LabelUpdateDTO {
-	@NotBlank
-	@Size(min = 3, max = 1000)
-	private JsonNullable<String> name;
+    @NotBlank
+    @Size(min = 3, max = 1000)
+    private JsonNullable<String> name;
 }

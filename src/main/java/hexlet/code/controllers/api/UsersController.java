@@ -7,6 +7,7 @@ import hexlet.code.mapper.UserMapper;
 import hexlet.code.model.User;
 import hexlet.code.service.UserService;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -80,6 +81,7 @@ public class UsersController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
+
     @GetMapping("/sentry-test")
     public ResponseEntity<String> testSentry() {
         try {

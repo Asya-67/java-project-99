@@ -13,9 +13,10 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
-import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.MappingConstants;
+import org.openapitools.jackson.nullable.JsonNullable;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashSet;
@@ -23,60 +24,80 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Mapper(
-		uses = {JsonNullableMapper.class},
-		componentModel = MappingConstants.ComponentModel.SPRING,
-		nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-		unmappedTargetPolicy = ReportingPolicy.IGNORE
+        uses = {ReferenceMapper.class, JsonNullableMapper.class},
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+        componentModel = MappingConstants.ComponentModel.SPRING,
+        unmappedTargetPolicy = ReportingPolicy.IGNORE
 )
 public abstract class TaskMapper {
 
-	@Autowired
-	protected LabelRepository labelRepository;
+    @Autowired
+    protected LabelRepository labelRepository;
 
-	@Autowired
-	protected TaskStatusRepository taskStatusRepository;
+    @Autowired
+    protected TaskStatusRepository taskStatusRepository;
 
-	@Mapping(source = "assigneeId", target = "assignee", qualifiedByName = "unwrap")
-	@Mapping(source = "status", target = "taskStatus", qualifiedByName = "statusSlugToModel")
-	@Mapping(source = "taskLabelIds", target = "labels", qualifiedByName = "labelIdsToModel")
-	public abstract Task map(TaskCreateDTO dto);
+    // ===================== Mapping Methods =====================
 
-	@Mapping(source = "assignee.id", target = "assigneeId", qualifiedByName = "wrap")
-	@Mapping(source = "taskStatus.slug", target = "status", qualifiedByName = "wrap")
-	@Mapping(source = "labels", target = "taskLabelIds", qualifiedByName = "modelToLabelIds")
-	public abstract TaskDTO map(Task model);
+    @Mapping(source = "assigneeId", target = "assignee")
+    @Mapping(source = "status", target = "taskStatus", qualifiedByName = "statusSlugToModel")
+    @Mapping(source = "taskLabelIds", target = "labels", qualifiedByName = "labelIdsToModel")
+    public abstract Task map(TaskCreateDTO dto);
 
-	@Mapping(source = "assigneeId", target = "assignee", qualifiedByName = "unwrap")
-	@Mapping(source = "status", target = "taskStatus", qualifiedByName = "statusSlugToModel")
-	@Mapping(source = "taskLabelIds", target = "labels", qualifiedByName = "labelIdsToModel")
-	public abstract void update(TaskUpdateDTO dto, @MappingTarget Task model);
+    @Mapping(source = "assignee.id", target = "assigneeId")
+    @Mapping(source = "taskStatus.slug", target = "status")
+    @Mapping(source = "labels", target = "taskLabelIds", qualifiedByName = "modelToLabelIds")
+    public abstract TaskDTO map(Task model);
 
-	@Mapping(source = "assignee.id", target = "assigneeId")
-	@Mapping(source = "taskStatus.slug", target = "status")
-	@Mapping(source = "labels", target = "taskLabelIds", qualifiedByName = "modelToLabelIds")
-	public abstract TaskCreateDTO mapToCreateDTO(Task model);
+    @Mapping(source = "assigneeId", target = "assignee", qualifiedByName = "unwrap")
+    @Mapping(source = "name", target = "name", qualifiedByName = "unwrap")
+    @Mapping(source = "description", target = "description", qualifiedByName = "unwrap")
+    @Mapping(source = "status", target = "taskStatus", qualifiedByName = "statusSlugToModelFromNullable")
+    @Mapping(source = "taskLabelIds", target = "labels", qualifiedByName = "unwrapLabelIds")
+    public abstract void update(TaskUpdateDTO dto, @MappingTarget Task model);
 
-	@Named("statusSlugToModel")
-	protected TaskStatus statusSlugToModel(String slug) {
-		return taskStatusRepository.findBySlug(slug)
-				.orElseThrow(() -> new ResourceNotFoundException("TaskStatus not found for slug: " + slug));
-	}
+    @Mapping(source = "assignee.id", target = "assigneeId")
+    @Mapping(source = "taskStatus.slug", target = "status")
+    @Mapping(source = "labels", target = "taskLabelIds", qualifiedByName = "modelToLabelIds")
+    public abstract TaskCreateDTO mapToCreateDTO(Task model);
 
-	@Named("labelIdsToModel")
-	protected Set<Label> labelIdsToModel(Set<Long> labelIds) {
-		if (labelIds == null || labelIds.isEmpty()) {
-			return new HashSet<>();
-		}
-		return new HashSet<>(labelRepository.findByIdIn(labelIds));
-	}
+    // ===================== Helpers =====================
 
-	@Named("modelToLabelIds")
-	protected Set<Long> modelToLabelIds(Set<Label> labels) {
-		if (labels == null || labels.isEmpty()) {
-			return new HashSet<>();
-		}
-		return labels.stream()
-				.map(Label::getId)
-				.collect(Collectors.toSet());
-	}
+    @Named("statusSlugToModel")
+    public TaskStatus statusSlugToModel(String slug) {
+        return taskStatusRepository.findBySlug(slug)
+                .orElseThrow(() -> new ResourceNotFoundException("TaskStatus not found with slug: " + slug));
+    }
+
+    @Named("statusSlugToModelFromNullable")
+    public TaskStatus statusSlugToModelFromNullable(JsonNullable<String> slugNullable) {
+        if (slugNullable == null || !slugNullable.isPresent()) {
+            return null;
+        }
+        return statusSlugToModel(slugNullable.get());
+    }
+
+    @Named("labelIdsToModel")
+    public Set<Label> labelIdsToModel(Set<Long> labelIds) {
+        if (labelIds == null || labelIds.isEmpty()) {
+            return new HashSet<>();
+        }
+        return new HashSet<>(labelRepository.findByIdIn(labelIds));
+    }
+
+    @Named("unwrapLabelIds")
+    public Set<Label> unwrapLabelIds(JsonNullable<Set<Long>> labelIdsNullable) {
+        if (labelIdsNullable == null || !labelIdsNullable.isPresent()) {
+            return null;
+        }
+        return labelIdsToModel(labelIdsNullable.get());
+    }
+
+    @Named("modelToLabelIds")
+    public Set<Long> modelToLabelIds(Set<Label> labels) {
+        if (labels == null || labels.isEmpty()) {
+            return new HashSet<>();
+        }
+        return labels.stream().map(Label::getId).collect(Collectors.toSet());
+    }
 }

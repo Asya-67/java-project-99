@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
@@ -21,26 +22,26 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 @AutoConfigureMockMvc
 public class AuthControllerTest {
 
-	@Autowired
-	private MockMvc mockMvc;
+    @Autowired
+    private MockMvc mockMvc;
 
-	@Autowired
-	private ObjectMapper om;
+    @Autowired
+    private ObjectMapper om;
 
-	@Value("/api/login")
-	private String url;
+    @Value("/api/login")
+    private String url;
 
-	@Test
-	public void testIndex() throws Exception {
-		AuthRequest authRequest = new AuthRequest();
-		authRequest.setUsername("hexlet@example.com");
-		authRequest.setPassword("qwerty");
+    @Test
+    public void testIndex() throws Exception {
+        AuthRequest authRequest = new AuthRequest();
+        authRequest.setUsername("hexlet@example.com");
+        authRequest.setPassword("qwerty");
 
-		MockHttpServletRequestBuilder request = post(url).with(jwt())
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(om.writeValueAsString(authRequest));
+        MockHttpServletRequestBuilder request = post(url).with(jwt())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(om.writeValueAsString(authRequest));
 
-		mockMvc.perform(request)
-				.andExpect(status().isOk());
-	}
+        mockMvc.perform(request)
+                .andExpect(status().isOk());
+    }
 }
