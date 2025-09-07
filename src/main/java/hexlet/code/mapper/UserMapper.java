@@ -2,38 +2,25 @@ package hexlet.code.mapper;
 
 import hexlet.code.dto.users.UserCreateDTO;
 import hexlet.code.dto.users.UserDTO;
+import hexlet.code.dto.users.UserUpdateDTO;
 import hexlet.code.model.User;
-import org.openapitools.jackson.nullable.JsonNullable;
+import org.mapstruct.Mapper;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.MappingConstants;
+import org.mapstruct.ReportingPolicy;
+import org.mapstruct.Mapping;
 
-public class UserMapper {
-
-    public static UserDTO toDTO(User user) {
-        UserDTO dto = new UserDTO();
-        dto.setId(user.getId());
-        dto.setEmail(JsonNullable.of(user.getEmail()));
-        dto.setFirstName(JsonNullable.of(user.getFirstName()));
-        dto.setLastName(JsonNullable.of(user.getLastName()));
-        dto.setCreatedAt(user.getCreatedAt());
-        return dto;
-    }
-
-    public static void updateEntity(User user, UserDTO dto) {
-        if (dto.getEmail() != null && dto.getEmail().isPresent()) {
-            user.setEmail(dto.getEmail().get());
-        }
-        if (dto.getFirstName() != null && dto.getFirstName().isPresent()) {
-            user.setFirstName(dto.getFirstName().get());
-        }
-        if (dto.getLastName() != null && dto.getLastName().isPresent()) {
-            user.setLastName(dto.getLastName().get());
-        }
-    }
-
-    public static UserCreateDTO mapToCreateDTO(User user) {
-        UserCreateDTO dto = new UserCreateDTO();
-        dto.setEmail(user.getEmail());
-        dto.setFirstName(user.getFirstName());
-        dto.setLastName(user.getLastName());
-        return dto;
-    }
+@Mapper(
+        uses = { ReferenceMapper.class, JsonNullableMapper.class },
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+        componentModel = MappingConstants.ComponentModel.SPRING,
+        unmappedTargetPolicy = ReportingPolicy.IGNORE
+)
+public abstract class UserMapper {
+    @Mapping(source = "password", target = "passwordDigest")
+    public abstract User map(UserCreateDTO dto);
+    public abstract UserDTO map(User model);
+    public abstract void update(UserUpdateDTO dto, @MappingTarget User model);
+    public abstract UserCreateDTO mapToCreateDTO(User model);
 }

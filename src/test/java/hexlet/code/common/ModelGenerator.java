@@ -30,7 +30,7 @@ public class ModelGenerator {
                 .ignore(Select.field(Task::getId))
                 .ignore(Select.field(Task::getAssignee))
                 .ignore(Select.field(Task::getTaskStatus))
-                .ignore(Select.field(Task::getLabels))
+                .ignore(Select.field(Task::getLabels)) //ignore
                 .supply(Select.field(Task::getName), () -> faker.lorem().word())
                 .supply(Select.field(Task::getIndex), () -> faker.number().randomDigitNotZero())
                 .supply(Select.field(Task::getDescription), () -> faker.lorem().sentence())
@@ -38,7 +38,6 @@ public class ModelGenerator {
 
         userModel = Instancio.of(User.class)
                 .ignore(Select.field(User::getId))
-                .ignore(Select.field(User::getTasks))
                 .supply(Select.field(User::getFirstName), () -> faker.name().firstName())
                 .supply(Select.field(User::getLastName), () -> faker.name().lastName())
                 .supply(Select.field(User::getEmail), () -> faker.internet().emailAddress())
@@ -47,14 +46,12 @@ public class ModelGenerator {
 
         statusModel = Instancio.of(TaskStatus.class)
                 .ignore(Select.field(TaskStatus::getId))
-                .ignore(Select.field(TaskStatus::getTasks))
                 .supply(Select.field(TaskStatus::getName), () -> faker.name().title())
                 .supply(Select.field(TaskStatus::getSlug), () -> faker.name().title())
                 .toModel();
 
         labelModel = Instancio.of(Label.class)
                 .ignore(Select.field(Label::getId))
-                .ignore(Select.field(Label::getTasks))
                 .supply(Select.field(Label::getName), () -> faker.name().title())
                 .toModel();
     }

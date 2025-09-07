@@ -1,6 +1,11 @@
 package hexlet.code.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 
 import lombok.Getter;
@@ -11,13 +16,10 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
@@ -27,38 +29,27 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Table(name = "users")
 @EntityListeners(AuditingEntityListener.class)
 public class User implements BaseEntity, UserDetails {
-
-    private static final BCryptPasswordEncoder ENCODER = new BCryptPasswordEncoder();
-
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
     private String firstName;
+
     private String lastName;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true)
     @Email
     @ToString.Include
     private String email;
 
     @Column(nullable = false)
-    @ToString.Exclude
     private String passwordDigest;
-
-    public void setPassword(String rawPassword) {
-        this.passwordDigest = ENCODER.encode(rawPassword);
-    }
 
     @CreatedDate
     private LocalDate createdAt;
 
     @LastModifiedDate
     private LocalDate updatedAt;
-
-    @OneToMany(mappedBy = "assignee")
-    @ToString.Exclude
-    private Set<Task> tasks = new HashSet<>();
 
     @Override
     public String getPassword() {
@@ -72,7 +63,7 @@ public class User implements BaseEntity, UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return new ArrayList<>();
+        return new ArrayList<GrantedAuthority>();
     }
 
     @Override

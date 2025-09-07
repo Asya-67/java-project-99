@@ -11,9 +11,9 @@ import java.time.LocalDate;
 @Getter
 public class UserDTO {
     private Long id;
-    private JsonNullable<String> email = JsonNullable.undefined();
-    private JsonNullable<String> firstName = JsonNullable.undefined();
-    private JsonNullable<String> lastName = JsonNullable.undefined();
+    private JsonNullable<String> email;
+    private JsonNullable<String> firstName;
+    private JsonNullable<String> lastName;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate createdAt;

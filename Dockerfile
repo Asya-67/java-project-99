@@ -1,33 +1,17 @@
-# Базовый образ с JDK 21
-FROM eclipse-temurin:21-jdk-alpine
+FROM eclipse-temurin:21-jdk
 
-#Рабочая директория внутри контейнера
-WORKDIR /app
+ARG GRADLE_VERSION=8.5
 
-# Копируем Gradle Wrapper и папку gradle
-COPY gradlew .
-COPY gradle gradle
+RUN apt-get update && apt-get install -yq make unzip
 
-# Копируем Kotlin DSL файлы сборки
-COPY build.gradle.kts settings.gradle.kts ./
+WORKDIR .
 
-#Кэшируем зависимости для ускорения сборки
-RUN ./gradlew dependencies --no-daemon || true
+COPY . .
 
-# Копируем исходники проекта
-COPY src src
+RUN ./gradlew installDist
 
-#Делаем gradlew исполняемым
-RUN chmod +x gradlew
+CMD ./build/install/app/bin/app
 
-# Сборка Spring Boot executable JAR
-RUN ./gradlew bootJar --no-daemon
-
-#Копируем bootJar в корень контейнера и называем app.jar
-RUN cp build/libs/*-SNAPSHOT.jar app.jar
-
-# Порт приложения
 EXPOSE 8080
 
-# Команда запуска
-CMD ["java", "-jar", "app.jar"]
+#CMD ./build/install/app/bin/app

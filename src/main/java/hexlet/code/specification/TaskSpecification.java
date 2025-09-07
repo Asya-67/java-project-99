@@ -7,7 +7,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TaskSpecification {
-    public Specification build(TaskRouteDTO params) {
+
+    public Specification<Task> build(TaskRouteDTO params) {
         return withTitleCount(params.getTitleCont())
                 .and(withAssigneeId(params.getAssigneeId()))
                 .and(withStatus(params.getStatus()))
@@ -17,7 +18,7 @@ public class TaskSpecification {
     private Specification<Task> withTitleCount(String titleCount) {
         return (root, query, cb) -> titleCount == null
                 ? cb.conjunction()
-                : cb.like((root.get("name")), "%" + titleCount + "%");
+                : cb.like(root.get("name"), "%" + titleCount + "%");
     }
 
     private Specification<Task> withAssigneeId(Long assigneeId) {
@@ -35,6 +36,6 @@ public class TaskSpecification {
     private Specification<Task> withLabelId(Long labelId) {
         return (root, query, cb) -> labelId == null
                 ? cb.conjunction()
-                : cb.equal(root.get("labels").get("id"), labelId);
+                : cb.equal(root.join("labels").get("id"), labelId);
     }
 }

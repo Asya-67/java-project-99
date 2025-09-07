@@ -1,34 +1,41 @@
 package hexlet.code.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Column;
+
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
-
-import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "task_statuses")
-@EntityListeners(AuditingEntityListener.class)
 public class TaskStatus implements BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false, unique = true)
     private String slug;
 
-    @CreatedDate
-    private LocalDate createdAt;
+    @Column(name = "created_at")
+    private LocalDate createdAt = LocalDate.now();
 
-    @OneToMany(mappedBy = "taskStatus")
-    private Set<Task> tasks = new HashSet<>();
+    public TaskStatus(String name, String slug) {
+        this.name = name;
+        this.slug = slug;
+        this.createdAt = LocalDate.now();
+    }
 }

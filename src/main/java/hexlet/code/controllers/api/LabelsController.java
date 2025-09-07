@@ -41,7 +41,7 @@ public class LabelsController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<LabelDTO> create(@Valid @RequestBody LabelCreateDTO labelData)
             throws NoSuchAlgorithmException, InvalidKeySpecException {
-        LabelDTO labels = labelService.create(labelData);
+        LabelDTO labels =  labelService.create(labelData);
         return ResponseEntity.status(HttpStatus.CREATED).body(labels);
     }
 

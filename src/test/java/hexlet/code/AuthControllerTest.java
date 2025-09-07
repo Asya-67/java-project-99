@@ -1,8 +1,9 @@
 package hexlet.code;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import hexlet.code.dto.AuthRequest;
 import hexlet.code.model.User;
 import hexlet.code.repository.UserRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -19,8 +21,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class AuthControllerTest {
 
+    private static final String TEST_EMAIL = "hexlet@example.com";
+    private static final String TEST_PASSWORD = "qwerty";
+
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper om;
 
     @Autowired
     private UserRepository userRepository;
@@ -30,22 +38,25 @@ public class AuthControllerTest {
 
     @BeforeEach
     public void setUp() {
+        userRepository.deleteAll();
+
         User user = new User();
-        user.setEmail("hexlet@example.com");
-        user.setPassword(passwordEncoder.encode("qwerty"));
+        user.setEmail(TEST_EMAIL);
+        user.setPasswordDigest(passwordEncoder.encode(TEST_PASSWORD));
         userRepository.save(user);
     }
 
-    @AfterEach
-    public void clear() {
-        userRepository.deleteAll();
-    }
-
     @Test
-    public void testLogin() throws Exception {
-        mockMvc.perform(post("/api/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"username\": \"hexlet@example.com\", \"password\": \"qwerty\"}"))
+    public void testAuth() throws Exception {
+        AuthRequest authRequest = new AuthRequest();
+        authRequest.setUsername(TEST_EMAIL);
+        authRequest.setPassword(TEST_PASSWORD);
+
+        MockHttpServletRequestBuilder request = post("/api/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(om.writeValueAsString(authRequest));
+
+        mockMvc.perform(request)
                 .andExpect(status().isOk());
     }
 }

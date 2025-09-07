@@ -26,13 +26,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/tasks")
 @AllArgsConstructor
-class TasksController {
+public class TasksController {
     private final TaskService tasksService;
 
     @GetMapping(path = "")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<List<TaskDTO>> index(TaskRouteDTO routes) {
-        List<TaskDTO> tasks = tasksService.getAll(routes);
+    public ResponseEntity<List<TaskDTO>> index(TaskRouteDTO params) {
+        List<TaskDTO> tasks = tasksService.getAll(params);
         return ResponseEntity.ok()
                 .header("X-Total-Count", String.valueOf(tasks.size()))
                 .body(tasks);
@@ -42,7 +42,7 @@ class TasksController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<TaskDTO> create(@Valid @RequestBody TaskCreateDTO taskData)
             throws NoSuchAlgorithmException, InvalidKeySpecException {
-        TaskDTO tasks = tasksService.create(taskData);
+        TaskDTO tasks =  tasksService.create(taskData);
         return ResponseEntity.status(HttpStatus.CREATED).body(tasks);
     }
 
